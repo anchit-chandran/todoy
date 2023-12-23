@@ -32,85 +32,73 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 4, 223, 33)),
+
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: const MainPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MainPageState extends State<MainPage> {
+  var todos = ['Learn flutter', 'Have fun', "Revise"];
+
+  Widget renderTodo(String todo) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(todo),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Todo-y!"),
-      ),
-      body: TodoForm(),
-    );
-  }
-}
-
-// Define a custom Form widget.
-class TodoForm extends StatefulWidget {
-  const TodoForm({super.key});
-
-  @override
-  State<TodoForm> createState() => _TodoFormState();
-}
-
-// Define a corresponding State class.
-// This class holds the data related to the Form.
-class _TodoFormState extends State<TodoForm> {
-  // Create a text controller and use it to retrieve the current value
-  // of the TextField.
-  final myController = TextEditingController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-    super.dispose();
-  }
-
-  var todoList = ['Walk the dog', 'Learn flutter', 'Play cs'];
-
-  @override
-  Widget build(BuildContext context) {
-    // Fill this out in the next step.
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      appBar: AppBar(title: Text('Todoy!')),
+      body: Column(
         children: [
-          Text("Enter your to-do:"),
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Learn flutter...",
-              ),
-              controller: myController,
-            ),
-          ),
-          for (var todoItem in todoList)
-            Container(
-              padding: EdgeInsets.all(5),
-              child: Text(
-                todoItem,
-                style: TextStyle(backgroundColor: Color(0xD21187CB))
-              )
-            )
+          Expanded(
+              child: ListView(
+                  children: todos.map((todo) => renderTodo(todo)).toList())),
+          SearchBox()
         ],
       ),
     );
+  }
+}
+
+class SearchBox extends StatelessWidget {
+  const SearchBox({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: TextField(
+                  decoration: InputDecoration(
+                labelText: 'Add your todo...',
+              )),
+            ),
+            IconButton(onPressed: () {}, icon: Icon(Icons.arrow_upward))
+          ],
+        ));
   }
 }
