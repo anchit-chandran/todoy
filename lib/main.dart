@@ -50,13 +50,41 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   var todos = ['Learn flutter', 'Have fun', "Revise"];
 
+  TextEditingController textController = TextEditingController();
+
+  // fn will grab textFromChild and create a new todo and append it to todos
+  void createNewTodo() {
+    setState(() {
+      todos.add(textController.text);
+      textController.clear(); // clear the input box on submit
+    });
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
   Widget renderTodo(String todo) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(todo),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(todo),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      todos.remove(todo);
+                    });
+                  },
+                  icon: Icon(Icons.circle_outlined)),
+            ],
+          ),
         ),
       ),
     );
@@ -71,7 +99,10 @@ class _MainPageState extends State<MainPage> {
           Expanded(
               child: ListView(
                   children: todos.map((todo) => renderTodo(todo)).toList())),
-          SearchBox()
+          SearchBox(
+            controller: textController,
+            onSubmit: createNewTodo,
+          ),
         ],
       ),
     );
@@ -79,8 +110,13 @@ class _MainPageState extends State<MainPage> {
 }
 
 class SearchBox extends StatelessWidget {
+  final void Function() onSubmit;
+  final TextEditingController controller;
+
   const SearchBox({
     super.key,
+    required this.controller,
+    required this.onSubmit,
   });
 
   @override
@@ -93,11 +129,18 @@ class SearchBox extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
+                  controller: controller,
                   decoration: InputDecoration(
-                labelText: 'Add your todo...',
-              )),
+                      labelText: 'Add your todo...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(),
+                      ))),
             ),
-            IconButton(onPressed: () {}, icon: Icon(Icons.arrow_upward))
+            IconButton(
+              onPressed: onSubmit,
+              icon: Icon(Icons.arrow_upward),
+            )
           ],
         ));
   }
