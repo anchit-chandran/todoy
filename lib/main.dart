@@ -58,7 +58,7 @@ class _MainPageState extends State<MainPage> {
   void createNewTodo() {
     setState(() {
       String newTodo = textController.text;
-      int index = todos.length;
+      int index = todos.isNotEmpty ? todos.length : 0;
       todos.add(newTodo);
       listKey.currentState!.insertItem(index);
       textController.clear(); // clear the input box on submit
@@ -121,18 +121,21 @@ class _MainPageState extends State<MainPage> {
       body: Column(
         children: [
           Expanded(
-            child: todos.isNotEmpty
-                ? AnimatedList(
-                    key: listKey,
-                    initialItemCount: todos.length,
-                    itemBuilder: (context, index, animation) =>
-                        buildTodo(todos[index], animation),
-                  )
-                : Center(
-                    child: Text("You're done for the day! ☀️",
-                        style: TextStyle(
-                          fontSize: 20,
-                        ))),
+            child: AnimatedList(
+              key: listKey,
+              initialItemCount: todos.length,
+              itemBuilder: (context, index, animation) {
+                if (todos.isNotEmpty) {
+                  return buildTodo(todos[index], animation);
+                } else {
+                  return Center(
+                      child: Text("You're done for the day! ☀️",
+                          style: TextStyle(
+                            fontSize: 20,
+                          )));
+                }
+              },
+            ),
           ),
           SearchBox(
             controller: textController,
