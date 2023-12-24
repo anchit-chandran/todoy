@@ -52,10 +52,15 @@ class _MainPageState extends State<MainPage> {
 
   TextEditingController textController = TextEditingController();
 
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+
   // fn will grab textFromChild and create a new todo and append it to todos
   void createNewTodo() {
     setState(() {
-      todos.add(textController.text);
+      String newTodo = textController.text;
+      int index = todos.length;
+      todos.add(newTodo);
+      listKey.currentState!.insertItem(index);
       textController.clear(); // clear the input box on submit
     });
   }
@@ -66,6 +71,7 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
+  // This function renders a todo inside a card
   Widget renderTodo(String todo) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -79,7 +85,17 @@ class _MainPageState extends State<MainPage> {
               IconButton(
                   onPressed: () {
                     setState(() {
-                      todos.remove(todo);
+                      int index = todos.indexOf(todo);
+                      if (index != -1) {
+                        todos.removeAt(index);
+                        listKey.currentState!.removeItem(
+                          index,
+                          (context, animation) => buildTodo(todo, animation),
+                          duration: const Duration(
+                              milliseconds:
+                                  250), // Set a suitable duration for the animation
+                        );
+                      }
                     });
                   },
                   icon: Icon(Icons.circle_outlined)),
@@ -90,6 +106,14 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  // this function builds animation for todo list
+  Widget buildTodo(String item, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: renderTodo(item),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,8 +121,12 @@ class _MainPageState extends State<MainPage> {
       body: Column(
         children: [
           Expanded(
-              child: ListView(
-                  children: todos.map((todo) => renderTodo(todo)).toList())),
+              child: AnimatedList(
+            key: listKey,
+            initialItemCount: todos.length,
+            itemBuilder: (context, index, animation) =>
+                buildTodo(todos[index], animation),
+          )),
           SearchBox(
             controller: textController,
             onSubmit: createNewTodo,
