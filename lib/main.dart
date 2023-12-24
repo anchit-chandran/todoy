@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 4, 223, 33)),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 230, 5, 83)),
 
         useMaterial3: true,
       ),
@@ -60,6 +60,11 @@ class _MainPageState extends State<MainPage> {
   void createNewTodo() {
     setState(() {
       String newTodo = textController.text;
+
+      if (newTodo.isEmpty) {
+        return;
+      }
+
       int index = todos.isNotEmpty ? todos.length : 0;
       todos.add(newTodo);
       listKey.currentState!.insertItem(index);
@@ -118,32 +123,45 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Todoy!')),
-      body: Column(
-        children: [
-          Expanded(
-            child: Stack(children: [
-              AnimatedList(
-                key: listKey,
-                initialItemCount: todos.isEmpty ? 1 : todos.length,
-                itemBuilder: (context, index, animation) =>
-                    buildTodo(todos[index], animation),
-              ),
-              Visibility(
-                visible: todos.isEmpty,
-                child: Center(
-                  child: Text("You're done for the day! ☀️",
-                      style: TextStyle(fontSize: 20)),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Todoy!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.black87,
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Stack(children: [
+                AnimatedList(
+                  key: listKey,
+                  initialItemCount: todos.isEmpty ? 1 : todos.length,
+                  itemBuilder: (context, index, animation) =>
+                      buildTodo(todos[index], animation),
                 ),
-              )
-            ]),
-          ),
-          SearchBox(
-            controller: textController,
-            onSubmit: createNewTodo,
-          ),
-        ],
+                Visibility(
+                  visible: todos.isEmpty,
+                  child: Center(
+                    child: Text(
+                      "You're done for the day! ☀️",
+                      style: TextStyle(fontSize: 20, color: Colors.black),
+                    ),
+                  ),
+                )
+              ]),
+            ),
+            SearchBox(
+              controller: textController,
+              onSubmit: createNewTodo,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -170,16 +188,40 @@ class SearchBox extends StatelessWidget {
             Expanded(
               child: TextField(
                   controller: controller,
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
-                      labelText: 'Add your todo...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide(),
-                      ))),
+                    fillColor: Colors.white,
+                    filled: true,
+                    labelText: 'Add your todo...',
+                    labelStyle: TextStyle(
+                        color: Colors
+                            .black), // Style for label when it is above the TextField
+                    floatingLabelStyle: TextStyle(
+                      color: Color.fromARGB(255, 74, 74, 74),
+                      backgroundColor: Colors.white,
+                    ), // Style for label when it is floating
+
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      // Border color when TextField is enabled but not focused
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide(color: const Color.fromARGB(255, 113, 113, 113)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      // Border color when TextField is focused
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 156, 32, 32)),
+                    ),
+                  )),
             ),
             IconButton(
               onPressed: onSubmit,
-              icon: Icon(Icons.arrow_upward),
+              icon: Icon(Icons.arrow_upward_rounded),
+              color: Colors.red,
             )
           ],
         ));
