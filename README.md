@@ -1,6 +1,6 @@
 # todoy
 
-A new Flutter project.
+![](firstFlutter.gif)
 
 ## Getting Started
 

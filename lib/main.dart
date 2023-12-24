@@ -48,7 +48,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  var todos = ['Learn flutter', 'Have fun', "Revise"];
+  var todos = [
+    'Learn flutter',
+  ];
 
   TextEditingController textController = TextEditingController();
 
@@ -121,21 +123,21 @@ class _MainPageState extends State<MainPage> {
       body: Column(
         children: [
           Expanded(
-            child: AnimatedList(
-              key: listKey,
-              initialItemCount: todos.length,
-              itemBuilder: (context, index, animation) {
-                if (todos.isNotEmpty) {
-                  return buildTodo(todos[index], animation);
-                } else {
-                  return Center(
-                      child: Text("You're done for the day! ☀️",
-                          style: TextStyle(
-                            fontSize: 20,
-                          )));
-                }
-              },
-            ),
+            child: Stack(children: [
+              AnimatedList(
+                key: listKey,
+                initialItemCount: todos.isEmpty ? 1 : todos.length,
+                itemBuilder: (context, index, animation) =>
+                    buildTodo(todos[index], animation),
+              ),
+              Visibility(
+                visible: todos.isEmpty,
+                child: Center(
+                  child: Text("You're done for the day! ☀️",
+                      style: TextStyle(fontSize: 20)),
+                ),
+              )
+            ]),
           ),
           SearchBox(
             controller: textController,
