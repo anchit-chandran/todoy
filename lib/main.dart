@@ -121,12 +121,19 @@ class _MainPageState extends State<MainPage> {
       body: Column(
         children: [
           Expanded(
-              child: AnimatedList(
-            key: listKey,
-            initialItemCount: todos.length,
-            itemBuilder: (context, index, animation) =>
-                buildTodo(todos[index], animation),
-          )),
+            child: todos.isNotEmpty
+                ? AnimatedList(
+                    key: listKey,
+                    initialItemCount: todos.length,
+                    itemBuilder: (context, index, animation) =>
+                        buildTodo(todos[index], animation),
+                  )
+                : Center(
+                    child: Text("You're done for the day! ☀️",
+                        style: TextStyle(
+                          fontSize: 20,
+                        ))),
+          ),
           SearchBox(
             controller: textController,
             onSubmit: createNewTodo,
